@@ -1,7 +1,7 @@
 # webdev-backend
 
 To install and run the backend server & database. Do the following:
-1. Clone repo: git clone https://GustavHandmark/webdev-backend.git
+1. Clone repo: git clone https://github.com/GustavHandmark/webdev-backend.git
 2. I suggest creating a virtual environment: 
     cd webdev-backend
     python -m venv venv
