@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 
 import sqlite3
-db_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','dbs','movies.db')) # Should work on every OS
+db_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','dbs','recipes.db')) # Should work on every OS
 conn = sqlite3.connect(db_path)
 
 def format_response(d):
@@ -16,8 +16,19 @@ def format_response(d):
 def get_ping():
     response.content_type = 'application/json'
     response.status = 200
-    return format_response({'data':'pong'})
+    return format_response({'data':'ping'})
+@get('/recipes/all')
+def list_recipes():
+    response.content_type = 'application/json'
+    response.status = 200
+    c = conn.cursor()
+    c.execute("SELECT * FROM recipes")
+    s = [{'recipe_id':recipe_id,'ingredients':json.loads(ingredients),'directions':directions,'title':title,'recipe_url':recipe_url}
+            for (recipe_id,ingredients,directions,title,recipe_url) in c]
+    return format_response(s)
 
+'''
+Old stuff, kept for reference and examples.
 @get('/movies')
 def get_movies():
     response.content_type = 'application/json'
@@ -187,3 +198,4 @@ def add_ticket():
         response.status = 400
     return format_response(s)
 #http://localhost:7007/performances?imdb=tt5580390&theater=Kino&date=2019-02-22&time=19:00
+'''

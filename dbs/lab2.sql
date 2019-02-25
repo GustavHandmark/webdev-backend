@@ -75,3 +75,5 @@ INTO theaters(t_name, capacity)
 VALUES  ('SF LUND', 250),
         ('SF MALMÖ', 350),
         ('Eksjö biograf', 75);
+
+PRAGMA foreign_keys=ON;
