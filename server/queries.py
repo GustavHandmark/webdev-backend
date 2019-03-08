@@ -1,5 +1,5 @@
 from bottle import request, response
-from bottle import route
+from bottle import route, hook
 from bottle import post, get, put, delete
 import os
 from pathlib import Path
@@ -11,6 +11,19 @@ conn = sqlite3.connect(db_path)
 
 def format_response(d):
     return json.dumps(d,indent = 4) + '\n'
+
+
+@hook('after_request')
+def enable_cors():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+
+@route('/',method ='OPTIONS')
+@route('/<path:path>',method='OPTIONS')
+def options_handler(path = None):
+    return
+
 
 @get('/ping')
 def get_ping():
@@ -26,7 +39,37 @@ def list_recipes():
     s = [{'recipe_id':recipe_id,'ingredients':json.loads(ingredients),'directions':directions,'title':title,'recipe_url':recipe_url}
             for (recipe_id,ingredients,directions,title,recipe_url) in c]
     return format_response(s)
+@get('/recipes/<recipe_id>')
+def search_recipe(recipe_id):
+    response.content_type = 'application/json'
+    query = """
+        SELECT *
+        FROM recipes
+        WHERE recipe_id=?
+        """
+    c = conn.cursor()
+    c.execute(query,[recipe_id])
+    res = c.fetchone()
+    print(res[0],res[1],res[2])
+    s = {'recipe_id':res[0],'ingredients':json.loads(res[1]),'directions':res[2],'title':res[3],'recipe_url':res[4]}
+    return format_response(s)
 
+'''
+@get('/movies/<imdb_id>')
+def search_movie(imdb_id):
+    response.content_type = 'application/json'
+    query = """
+        SELECT *
+        FROM movies
+        WHERE imdb_id=?
+        """
+    c = conn.cursor()
+    c.execute(query,[imdb_id])
+    s = [{"imdbKey": imdb_id, "title":title,"prod_year":prod_year}
+        for (title,prod_year,imdb_id) in c]
+
+    return format_response({'data':s})
+'''
 '''
 Old stuff, kept for reference and examples.
 @get('/movies')
