@@ -50,10 +50,35 @@ def search_recipe(recipe_id):
     c = conn.cursor()
     c.execute(query,[recipe_id])
     res = c.fetchone()
-    print(res[0],res[1],res[2])
-    s = {'recipe_id':res[0],'ingredients':json.loads(res[1]),'directions':res[2],'title':res[3],'recipe_url':res[4]}
-    return format_response(s)
+    if(res != None):
+        s = {'recipe_id':res[0],'ingredients':json.loads(res[1]),'directions':res[2],'title':res[3],'recipe_url':res[4]}
+        return format_response(s)
+    else:
+        return format_response("No matching recipes")
+@post('/recipes/create')
+def create_recipe():
+    data = request.json
+    print(data['recipe_id'])
+    print(data['ingredients'])
+    print(data['directions'])
+    print(data['title'])
+    print(data['recipe_url'])
+    print(data)
+    '''
+    query = """
+        INSERT
+        INTO recipes(ingredients,directions,title,recipe_url)
+        VALUES (?,?,?,?)
+    """
+    c = conn.cursor()
+    c.execute(query, [data['ingredients'],data['directions'],data['title'],data['recipe_url]])
+    conn.commit()
+    '''
+    return format_response("Succesfully created recipe")
 
+@delete('recipes/delete/<recipe_id>')
+def delete_recipe():
+    return 'k'
 '''
 @get('/movies/<imdb_id>')
 def search_movie(imdb_id):
