@@ -58,22 +58,18 @@ def search_recipe(recipe_id):
 @post('/recipes/create')
 def create_recipe():
     data = request.json
-    print(data['recipe_id'])
     print(data['ingredients'])
     print(data['directions'])
     print(data['title'])
-    print(data['recipe_url'])
     print(data)
-    '''
     query = """
         INSERT
         INTO recipes(ingredients,directions,title,recipe_url)
         VALUES (?,?,?,?)
     """
     c = conn.cursor()
-    c.execute(query, [data['ingredients'],data['directions'],data['title'],data['recipe_url]])
-    conn.commit()
-    '''
+    c.execute(query, [json.dumps(data['ingredients']),data['directions'],data['title'],data['recipe_url']])
+    #conn.commit()
     return format_response("Succesfully created recipe")
 
 @delete('recipes/delete/<recipe_id>')
